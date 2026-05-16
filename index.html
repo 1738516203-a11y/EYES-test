@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYES测试 - 发现你的用眼类型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 50%, #efe9df 100%);
+            min-height: 100vh;
+            color: #5a4a42;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 柔和开场动画 */
+        .intro-screen {
+            text-align: center;
+            animation: fadeInUp 1.2s ease-out;
+            position: relative;
+        }
+
+        /* 装饰性背景圆 */
+        .intro-screen::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,200,180,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 0;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .intro-screen::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(180,220,200,0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: 100px;
+            right: 10%;
+            z-index: 0;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(-50%); }
+            50% { transform: translateY(-20px) translateX(-50%); }
+        }
+
+        /* 柔和的眼睛图标 */
+        .eye-icon {
+            width: 140px;
+            height: 100px;
+            margin: 0 auto 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .eye-outer {
+            width: 120px;
+            height: 70px;
+            background: linear-gradient(145deg, #fff 0%, #f8f4f0 100%);
+            border-radius: 100% 0;
+            transform: rotate(45deg);
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            box-shadow: 
+                0 8px 32px rgba(139, 115, 85, 0.15),
+                inset 0 2px 4px rgba(255,255,255,0.8);
+            border: 2px solid rgba(139, 115, 85, 0.1);
+        }
+
+        .eye-inner {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(145deg, #8b7355 0%, #6b5344 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 27px;
+            left: 47px;
+            box-shadow: 0 4px 12px rgba(107, 83, 68, 0.3);
+            animation: gentleLook 8s ease-in-out infinite;
+        }
+
+        .eye-inner::after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            opacity: 0.9;
+        }
+
+        .eye-highlight {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            position: absolute;
+            top: 35px;
+            left: 65px;
+            z-index: 2;
+        }
+
+        /* 睫毛装饰 */
+        .lash {
+            position: absolute;
+            width: 2px;
+            height: 12px;
+            background: linear-gradient(to bottom, #8b7355, transparent);
+            border-radius: 2px;
+            opacity: 0.4;
+        }
+
+        .lash:nth-child(4) { top: 5px; left: 50px; transform: rotate(-20deg); }
+        .lash:nth-child(5) { top: 0px; left: 70px; transform: rotate(-10deg); }
+        .lash:nth-child(6) { top: 0px; left: 90px; transform: rotate(5deg); }
+        .lash:nth-child(7) { top: 5px; left: 110px; transform: rotate(20deg); }
+
+        @keyframes gentleLook {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(8px, -3px); }
+            50% { transform: translate(-4px, 4px); }
+            75% { transform: translate(-6px, -2px); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 柔和标题 */
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: #5a4a42;
+            font-weight: 300;
+            letter-spacing: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 span {
+            font-weight: 600;
+            color: #8b7355;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #9a8b7d;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle br {
+            display: block;
+            margin: 8px 0;
+        }
+
+        /* 类型标签 */
+        .type-tags {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .type-tag {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.6);
+            border: 1px solid rgba(139, 115, 85, 0.15);
+            color: #8b7355;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .type-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.1);
+            background: rgba(255,255,255,0.9);
+        }
+
+        /* 柔和按钮 */
+        .start-btn {
+            background: linear-gradient(135deg, #b8a089 0%, #a08b6d 100%);
+            color: #fff;
+            border: none;
+            padding: 18px 60px;
+            font-size: 1.15em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 24px rgba(139, 115, 85, 0.25);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(139, 115, 85, 0.35);
+            background: linear-gradient(135deg, #c4ad96 0%, #b09a7a 100%);
+        }
+
+        .start-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* 底部装饰线 */
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c4ad96, transparent);
+            margin: 30px auto;
+            border-radius: 1px;
+        }
+
+        /* 测试界面 - 适配柔和风格 */
+        .quiz-screen {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(139, 115, 85, 0.1);
+            border-radius: 2px;
+            margin-bottom: 50px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c4ad96, #b8a089);
+            border-radius: 2px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        .question-counter {
+            text-align: center;
+            color: #b8a089;
+            font-size: 0.85em;
+            margin-bottom: 25px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            text-align: center;
+            margin-bottom: 50px;
+            line-height: 1.7;
+            color: #5a4a42;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .option {
+            background: rgba(255,255,255,0.7);
+            border: 1.5px solid rgba(139, 115, 85, 0.12);
+            border-radius: 16px;
+            padding: 22px 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .option:hover {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(139, 115, 85, 0.3);
+            transform: translateX(8px);
+            box-shadow: 0 4px 16px rgba(139, 115, 85, 0.08);
+        }
+
+        .option.selected {
+            background: rgba(184, 160, 137, 0.12);
+            border-color: #b8a089;
+            transform: translateX(8px);
+            box-shadow: 0 4px 16px rgba(139, 115, 85, 0.12);
+        }
+
+        .option-icon {
+            font-size: 1.6em;
+            min-width: 40px;
+            text-align: center;
+            filter: grayscale(0.2);
+        }
+
+        .option-text {
+            font-size: 1.05em;
+            color: #5a4a42;
+            line-height: 1.5;
+        }
+
+        .option-letter {
+            position: absolute;
+            right: 22px;
+            width: 28px;
+            height: 28px;
+            border: 1.5px solid rgba(139, 115, 85, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            color: rgba(139, 115, 85, 0.5);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .option:hover .option-letter,
+        .option.selected .option-letter {
+            border-color: #b8a089;
+            color: #b8a089;
+            background: rgba(184, 160, 137, 0.1);
+        }
+
+        /* 结果页面 - 柔和风格 */
+        .result-screen {
+            display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid rgba(139, 115, 85, 0.1);
+            border-radius: 28px;
+            padding: 45px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(139, 115, 85, 0.08);
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(184,160,137,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .result-type {
+            font-size: 2.8em;
+            font-weight: 300;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 4px;
+        }
+
+        .result-title {
+            font-size: 1.3em;
+            color: #8b7355;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .result-desc {
+            color: #7a6b5d;
+            line-height: 1.9;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+            font-size: 1.05em;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .traits {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 35px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .trait {
+            background: rgba(255,255,255,0.6);
+            padding: 18px;
+            border-radius: 14px;
+            border-left: 3px solid #c4ad96;
+            text-align: left;
+        }
+
+        .trait-label {
+            font-size: 0.8em;
+            color: #9a8b7d;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .trait-value {
+            font-size: 1.05em;
+            color: #5a4a42;
+            font-weight: 500;
+        }
+
+        .advice-section {
+            background: rgba(184, 160, 137, 0.06);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 35px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(139, 115, 85, 0.1);
+        }
+
+        .advice-title {
+            color: #8b7355;
+            font-size: 1.15em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .advice-list {
+            list-style: none;
+            color: #6b5d50;
+        }
+
+        .advice-list li {
+            padding: 10px 0;
+            padding-left: 28px;
+            position: relative;
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .advice-list li::before {
+            content: '◦';
+            position: absolute;
+            left: 8px;
+            color: #b8a089;
+            font-size: 1.2em;
+        }
+
+        .share-btn {
+            background: transparent;
+            border: 1.5px solid #b8a089;
+            color: #8b7355;
+            padding: 14px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 35px;
+            transition: all 0.3s;
+            font-size: 0.95em;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 1px;
+        }
+
+        .share-btn:hover {
+            background: #b8a089;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(139, 115, 85, 0.2);
+        }
+
+        .restart-btn {
+            background: rgba(139, 115, 85, 0.08);
+            border: none;
+            color: #8b7355;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-left: 12px;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+
+        .restart-btn:hover {
+            background: rgba(139, 115, 85, 0.15);
+        }
+
+        /* 类型颜色 - 莫兰迪色系 */
+        .type-healthy { color: #7a9e7e; }
+        .type-danger { color: #c17b7b; }
+        .type-sensitive { color: #c4a46a; }
+        .type-balanced { color: #7a9aa8; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2em; letter-spacing: 4px; }
+            .question-text { font-size: 1.2em; }
+            .result-type { font-size: 2.2em; }
+            .traits { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+            .result-card { padding: 30px 20px; }
+            .type-tags { gap: 10px; }
+            .type-tag { padding: 6px 14px; font-size: 0.85em; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 开场页面 -->
+        <div class="intro-screen" id="introScreen">
+            <div class="eye-icon">
+                <div class="eye-outer"></div>
+                <div class="eye-inner"></div>
+                <div class="eye-highlight"></div>
+                <div class="lash"></div>
+                <div class="lash"></div>
+                <div class="lash"></div>
+                <div class="lash"></div>
+            </div>
+            <h1><span>EYES</span> 测试</h1>
+            <div class="divider"></div>
+            <p class="subtitle">
+                你的眼睛正在轻轻诉说<br>
+                12道温柔的问题，读懂你的用眼方式<br>
+                发现属于自己的护眼节奏
+            </p>
+            <div class="type-tags">
+                <span class="type-tag">🌿 健康型</span>
+                <span class="type-tag">⚠️ 危险型</span>
+                <span class="type-tag">🌸 敏感型</span>
+                <span class="type-tag">⚖️ 平衡型</span>
+            </div>
+            <button class="start-btn" onclick="startQuiz()">开始探索</button>
+        </div>
+
+        <!-- 测试页面 -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-counter" id="questionCounter">问题 1 / 12</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+
+        <!-- 结果页面 -->
+        <div class="result-screen" id="resultScreen">
+            <div class="result-card">
+                <div class="result-type" id="resultType"></div>
+                <div class="result-title" id="resultTitle"></div>
+                <div class="result-desc" id="resultDesc"></div>
+                
+                <div class="traits" id="traitsContainer"></div>
+                
+                <div class="advice-section">
+                    <div class="advice-title">🌿 专属护眼建议</div>
+                    <ul class="advice-list" id="adviceList"></ul>
+                </div>
+                
+                <div style="margin-top: 30px; position: relative; z-index: 1;">
+                    <button class="share-btn" onclick="shareResult()">分享结果</button>
+                    <button class="restart-btn" onclick="restartQuiz()">重新探索</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 测试题目数据
+        const questions = [
+            {
+                text: "工作日结束时，你的眼睛通常感觉如何？",
+                options: [
+                    { text: "依然清爽，没什么不适", icon: "😊", type: "healthy", score: 3 },
+                    { text: "干涩疲劳，想闭眼休息", icon: "😫", type: "danger", score: 3 },
+                    { text: "有点酸胀，但还能忍受", icon: "😣", type: "sensitive", score: 3 },
+                    { text: "偶尔疲劳，但休息一下就好", icon: "🙂", type: "balanced", score: 3 }
+                ]
+            },
+            {
+                text: "你每天的屏幕使用时间大概是？",
+                options: [
+                    { text: "严格控制在6小时以内", icon: "⏰", type: "healthy", score: 2 },
+                    { text: "超过10小时，停不下来", icon: "📱", type: "danger", score: 3 },
+                    { text: "8小时左右，但眼睛容易累", icon: "💻", type: "sensitive", score: 2 },
+                    { text: "7-8小时，会主动休息", icon: "⚖️", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "看屏幕时，你多久会眨眼/休息一次？",
+                options: [
+                    { text: "每20分钟看远处20秒", icon: "🎯", type: "healthy", score: 3 },
+                    { text: "经常忘记，一盯就是几小时", icon: "🚫", type: "danger", score: 3 },
+                    { text: "眼睛不舒服了才休息", icon: "⚠️", type: "sensitive", score: 2 },
+                    { text: "大概每小时会休息一次", icon: "✅", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "你的屏幕亮度和环境光通常是？",
+                options: [
+                    { text: "亮度适中，与环境光协调", icon: "💡", type: "healthy", score: 2 },
+                    { text: "很亮，喜欢清晰的感觉", icon: "🔆", type: "danger", score: 2 },
+                    { text: "偏暗，觉得舒服但费眼", icon: "🌙", type: "sensitive", score: 2 },
+                    { text: "根据时间自动调节", icon: "🔄", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "睡前半小时，你通常在做什么？",
+                options: [
+                    { text: "看书或做眼保健操", icon: "📖", type: "healthy", score: 2 },
+                    { text: "关灯刷手机到困", icon: "🛏️", type: "danger", score: 3 },
+                    { text: "戴防蓝光眼镜看屏幕", icon: "👓", type: "sensitive", score: 2 },
+                    { text: "听听音乐，让眼睛休息", icon: "🎵", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "你的眼睛对以下哪种情况最敏感？",
+                options: [
+                    { text: "都不太敏感，耐受力好", icon: "💪", type: "healthy", score: 2 },
+                    { text: "空调房/干燥环境", icon: "🏜️", type: "danger", score: 2 },
+                    { text: "强光/烟雾/花粉", icon: "🌸", type: "sensitive", score: 3 },
+                    { text: "长时间专注后", icon: "⏳", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "你多久检查一次视力？",
+                options: [
+                    { text: "每年定期体检检查", icon: "🏥", type: "healthy", score: 2 },
+                    { text: "等看不清了再去", icon: "🙈", type: "danger", score: 2 },
+                    { text: "半年一次，比较谨慎", icon: "🔍", type: "sensitive", score: 2 },
+                    { text: "1-2年检查一次", icon: "📅", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "使用电子设备时，你的姿势通常是？",
+                options: [
+                    { text: "保持一臂距离，坐姿端正", icon: "🧘", type: "healthy", score: 2 },
+                    { text: "躺着/趴着，怎么舒服怎么来", icon: "🛋️", type: "danger", score: 2 },
+                    { text: "凑得很近，怕看不清", icon: "🔎", type: "sensitive", score: 2 },
+                    { text: "偶尔调整，大体规范", icon: "👍", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "你的眼睛是否经常出现以下症状？",
+                options: [
+                    { text: "很少，几乎无症状", icon: "✨", type: "healthy", score: 3 },
+                    { text: "红血丝、黑眼圈常驻", icon: "👁️", type: "danger", score: 3 },
+                    { text: "易流泪、畏光、发痒", icon: "💧", type: "sensitive", score: 3 },
+                    { text: "下午时段容易视疲劳", icon: "🌆", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "你的饮食习惯中，哪项最符合？",
+                options: [
+                    { text: "常吃深色蔬菜、鱼类、坚果", icon: "🥗", type: "healthy", score: 2 },
+                    { text: "外卖为主，不太讲究", icon: "🍔", type: "danger", score: 2 },
+                    { text: "会特意补充叶黄素/维生素", icon: "💊", type: "sensitive", score: 2 },
+                    { text: "饮食均衡，偶尔补充", icon: "🍱", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "户外活动时，你的护眼措施是？",
+                options: [
+                    { text: "必戴太阳镜，打遮阳伞", icon: "🕶️", type: "healthy", score: 2 },
+                    { text: "很少防护，嫌麻烦", icon: "☀️", type: "danger", score: 2 },
+                    { text: "戴帽子但眼睛怕光", icon: "👒", type: "sensitive", score: 2 },
+                    { text: "看情况，强光下会防护", icon: "🌤️", type: "balanced", score: 2 }
+                ]
+            },
+            {
+                text: "如果眼睛不舒服，你的第一反应是？",
+                options: [
+                    { text: "闭眼休息或热敷", icon: "😌", type: "healthy", score: 2 },
+                    { text: "滴眼药水继续工作", icon: "💧", type: "danger", score: 2 },
+                    { text: "马上就医或查资料", icon: "🏥", type: "sensitive", score: 2 },
+                    { text: "调整环境光，减少用眼", icon: "🔄", type: "balanced", score: 2 }
+                ]
+            }
+        ];
+
+        // 结果定义 - 柔和风格文案
+        const results = {
+            healthy: {
+                type: "健康型",
+                title: "EYES-H | 温润守护者",
+                desc: "你像一位细心的园丁，懂得倾听眼睛的声音。规律的节奏、适度的休息、自然的呵护——你的眼睛在温柔中被善待。这份自律不是约束，而是对自己身体的体贴。",
+                color: "type-healthy",
+                traits: [
+                    { label: "护眼意识", value: "★★★★★" },
+                    { label: "自律程度", value: "温润而坚定" },
+                    { label: "风险指数", value: "低" },
+                    { label: "眼睛状态", value: "安宁" }
+                ],
+                advice: [
+                    "继续保持20-20-20法则：每20分钟，望向20英尺外，停留20秒",
+                    "将这份温柔传递给身边的人，分享你的护眼心得",
+                    "即使状态良好，每年一次的眼科检查仍是必要的关怀",
+                    "尝试在周末增加户外散步时间，自然光是最好的礼物"
+                ]
+            },
+            danger: {
+                type: "危险型",
+                title: "EYES-D | 疲惫赶路人",
+                desc: "你的眼睛在默默承受着过度的负担。长时间凝视、深夜的屏幕、被忽略的酸痛——它们在等待你停下来，给它们一个喘息的机会。改变不必剧烈，从下一刻开始就好。",
+                color: "type-danger",
+                traits: [
+                    { label: "护眼意识", value: "★★☆☆☆" },
+                    { label: "用眼强度", value: "过载" },
+                    { label: "风险指数", value: "需要关注" },
+                    { label: "此刻最需要", value: "停下来" }
+                ],
+                advice: [
+                    "设置一个温柔的提醒：每45分钟，闭上眼睛，深呼吸三次",
+                    "调整屏幕与眼睛的距离，让视线更舒展一些",
+                    "睡前一小时，让手机远离床头，给眼睛一个安静的夜晚",
+                    "预约一次眼科检查，了解眼睛的真实状态，不必害怕",
+                    "选择无防腐剂的人工泪液，为干涩的眼睛带来一丝润泽"
+                ]
+            },
+            sensitive: {
+                type: "敏感型",
+                title: "EYES-S | 细腻感知者",
+                desc: "你拥有一双易感而纤细的眼睛，它们对世界的变化格外敏锐。光线、空气、温度，都在与它们对话。这份敏感不是脆弱，而是一种天赋，需要的是被理解的呵护。",
+                color: "type-sensitive",
+                traits: [
+                    { label: "敏感度", value: "★★★★★" },
+                    { label: "防护意识", value: "细腻入微" },
+                    { label: "风险指数", value: "中等" },
+                    { label: "护理需求", value: "量身定制" }
+                ],
+                advice: [
+                    "记录你的「敏感时刻」，了解哪些环境让眼睛不适，逐步规避",
+                    "在办公桌旁放一台小型加湿器，让空气对眼睛更友好",
+                    "选择质地温和的护眼产品，避免含有刺激成分的滴眼液",
+                    "尝试温热的毛巾敷眼，让睑板腺得到舒缓的呵护",
+                    "咨询专业的眼科医生，寻找适合敏感体质的营养补充方案"
+                ]
+            },
+            balanced: {
+                type: "平衡型",
+                title: "EYES-B | 从容调和者",
+                desc: "你在生活与护眼之间找到了一种从容的节奏。不苛责自己，也不放任自流。这份平衡本身就是一种智慧——你知道何时该努力，何时该让眼睛休息。",
+                color: "type-balanced",
+                traits: [
+                    { label: "平衡能力", value: "★★★★☆" },
+                    { label: "适应力", value: "柔韧" },
+                    { label: "风险指数", value: "温和" },
+                    { label: "优化空间", value: "细水长流" }
+                ],
+                advice: [
+                    "将现有的好习惯写下来，形成一份属于自己的护眼小仪式",
+                    "在周末尝试更长时间的户外活动，让眼睛沐浴在自然光中",
+                    "学习简单的眼部放松操，让疲劳的恢复更加高效",
+                    "调整屏幕的色温与字体，让阅读体验更加舒适",
+                    "每两年一次的眼科检查，是对未来的一份温柔投资"
+                ]
+            }
+        };
+
+        let currentQuestion = 0;
+        let scores = { healthy: 0, danger: 0, sensitive: 0, balanced: 0 };
+
+        function startQuiz() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionCounter').textContent = `问题 ${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.text;
+            
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerHTML = `
+                    <div class="option-icon">${opt.icon}</div>
+                    <div class="option-text">${opt.text}</div>
+                    <div class="option-letter">${letters[index]}</div>
+                `;
+                div.onclick = () => selectOption(opt, div);
+                container.appendChild(div);
+            });
+        }
+
+        function selectOption(option, element) {
+            document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            scores[option.type] += option.score;
+            
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 500);
+        }
+
+        function showResult() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            
+            let maxType = 'balanced';
+            let maxScore = 0;
+            for (let type in scores) {
+                if (scores[type] > maxScore) {
+                    maxScore = scores[type];
+                    maxType = type;
+                }
+            }
+            
+            if (scores.danger >= 20 && scores.danger >= scores.healthy && scores.danger >= scores.balanced) {
+                maxType = 'danger';
+            }
+            
+            const result = results[maxType];
+            
+            const typeEl = document.getElementById('resultType');
+            typeEl.textContent = result.type;
+            typeEl.className = `result-type ${result.color}`;
+            
+            document.getElementById('resultTitle').textContent = result.title;
+            document.getElementById('resultDesc').textContent = result.desc;
+            
+            const traitsContainer = document.getElementById('traitsContainer');
+            traitsContainer.innerHTML = '';
+            result.traits.forEach(trait => {
+                const div = document.createElement('div');
+                div.className = 'trait';
+                div.innerHTML = `
+                    <div class="trait-label">${trait.label}</div>
+                    <div class="trait-value">${trait.value}</div>
+                `;
+                traitsContainer.appendChild(div);
+            });
+            
+            const adviceList = document.getElementById('adviceList');
+            adviceList.innerHTML = '';
+            result.advice.forEach(advice => {
+                const li = document.createElement('li');
+                li.textContent = advice;
+                adviceList.appendChild(li);
+            });
+            
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function shareResult() {
+            const type = document.getElementById('resultType').textContent;
+            const title = document.getElementById('resultTitle').textContent;
+            const text = `我的EYES测试结果是【${type}】-${title}。来测测你的用眼类型吧，一起温柔地对待眼睛。`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'EYES测试 - 我的用眼类型',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('结果已复制到剪贴板 ✨');
+                });
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            scores = { healthy: 0, danger: 0, sensitive: 0, balanced: 0 };
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('introScreen').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('quizScreen').style.display === 'block') {
+                const key = parseInt(e.key);
+                if (key >= 1 && key <= 4) {
+                    const options = document.querySelectorAll('.option');
+                    if (options[key - 1]) {
+                        options[key - 1].click();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
